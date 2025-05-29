@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { configuration } from 'config/configuration';
+import dataSource from './database/data-source';
+import { UserModule } from './user/user.module';
 
 
 @Module({
@@ -10,6 +13,13 @@ import { configuration } from 'config/configuration';
       load: [configuration],
       expandVariables: true
     }),
+    TypeOrmModule.forRootAsync({
+      useFactory: async () => ({
+        ...dataSource.options,
+      }),
+      dataSourceFactory: async () => dataSource,
+    }),
+    UserModule,
   ],
   controllers: [],
   providers: [],

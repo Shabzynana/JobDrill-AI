@@ -21,7 +21,7 @@ export const configuration = () => ({
       host: process.env.REDIS_HOST,
       user: process.env.REDIS_USERNAME,
       pass: process.env.REDIS_PASS,
-      db: process.env.REDIS_DB || 'playlist-swap',
+      db: process.env.REDIS_DB,
     }
   
   });

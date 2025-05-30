@@ -1,6 +1,7 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
 import * as dotenv from 'dotenv';
 import { User } from 'src/user/entities/user.entity';
+import { Token } from 'src/token/entities/token.entity';
 
 dotenv.config();
 
@@ -13,7 +14,7 @@ const dataSource = new DataSource({
   host: process.env.DB_HOST,
   port: +process.env.DB_PORT,
   database: process.env.DB_NAME,
-  entities: [User],
+  entities: [User,Token],
   migrations: [process.env.DB_MIGRATIONS],
   synchronize: isDevelopment,
   migrationsTableName: 'migrations',

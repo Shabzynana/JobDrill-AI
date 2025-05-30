@@ -73,7 +73,7 @@ export class AuthService {
         const hashedPassword =  await AppUtilities.hashPassword(dto.password)
         const newUser = await this.userService.createUser({...dto, password: hashedPassword});
         await this.emailService.sendConfirmationEmail(newUser);
-        return newUser;
+        return await this.userService.getUserById(newUser.id);
     }
 
     async login(dto: UserLoginDto) {

@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { BullConfigService } from 'config/bullConfigService';
 import { configuration } from 'config/configuration';
 import { AuthModule } from './auth/auth.module';
 import dataSource from './database/data-source';
@@ -26,6 +27,7 @@ import { UserModule } from './user/user.module';
     TokenModule,
     EmailModule,
     AuthModule,
+    BullConfigService,
   ],
   controllers: [],
   providers: [],

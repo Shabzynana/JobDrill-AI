@@ -17,9 +17,17 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "migration:create": "yarn typeorm migration:create db/migrations/migration",
+    "premigration:generate": "yarn run build",
+    "migration:generate": "yarn run build && npx typeorm migration:generate db/migrations/migration -d dist/src/database/data-source",
+    "premigration:run": "yarn run build",
+    "migration:run": "yarn typeorm migration:run -d dist/src/database/data-source",
+    "migration:revert": "npx typeorm migration:revert -d dist/src/database/data-source"
   },
   "dependencies": {
+    "@bull-board/express": "^6.9.6",
+    "@bull-board/nestjs": "^6.9.6",
     "@nestjs-modules/mailer": "^2.0.2",
     "@nestjs/bullmq": "^11.0.2",
     "@nestjs/common": "^10.0.0",

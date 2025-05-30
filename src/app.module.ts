@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { configuration } from 'config/configuration';
+import { AuthModule } from './auth/auth.module';
 import dataSource from './database/data-source';
 import { EmailModule } from './email/email.module';
 import { TokenModule } from './token/token.module';
@@ -24,6 +25,7 @@ import { UserModule } from './user/user.module';
     UserModule,
     TokenModule,
     EmailModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],

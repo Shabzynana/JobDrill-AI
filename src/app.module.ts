@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { configuration } from 'config/configuration';
 import dataSource from './database/data-source';
+import { TokenModule } from './token/token.module';
 import { UserModule } from './user/user.module';
 
 
@@ -20,6 +21,7 @@ import { UserModule } from './user/user.module';
       dataSourceFactory: async () => dataSource,
     }),
     UserModule,
+    TokenModule,
   ],
   controllers: [],
   providers: [],

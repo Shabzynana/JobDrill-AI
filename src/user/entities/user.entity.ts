@@ -7,11 +7,6 @@ import {
 } from 'typeorm';
 import { AbstractBaseEntity } from '../../database/base.entity';
 
-export enum UserRole {
-  CUSTOMER = 'customer',
-  ADMIN = 'admin'
-}
-
 
 @Entity({ name: 'users' })
 export class User extends AbstractBaseEntity {

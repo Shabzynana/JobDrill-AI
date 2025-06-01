@@ -9,6 +9,8 @@ import { EmailModule } from './email/email.module';
 import { TokenModule } from './token/token.module';
 import { UserModule } from './user/user.module';
 import { InterviewsModule } from './interviews/interviews.module';
+import { GroqModule } from './groq/groq.module';
+import { QnAModule } from './QnA/QnA.module';
 
 
 @Module({
@@ -30,6 +32,8 @@ import { InterviewsModule } from './interviews/interviews.module';
     AuthModule,
     BullConfigService,
     InterviewsModule,
+    GroqModule,
+    QnAModule,
   ],
   controllers: [],
   providers: [],

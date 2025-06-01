@@ -1,0 +1,1 @@
+export const generalPersona = ` You are a helpful assistant.`;

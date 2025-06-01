@@ -15,7 +15,7 @@ export class Answer extends AbstractBaseEntity {
   @Column("text")
   content: string;
 
-  @Column()
+  @Column({ nullable: true })
   score: number;
 
   @Column("text", { nullable: true })

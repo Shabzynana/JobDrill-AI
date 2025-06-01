@@ -7,7 +7,7 @@ import {
     OneToOne,
   } from 'typeorm';
   import { AbstractBaseEntity } from '../../database/base.entity';
-import { Question } from './question.entity';
+import { Question } from '../../QnA/entities/question.entity';
 @Entity()
 export class InterviewSession extends AbstractBaseEntity {
  

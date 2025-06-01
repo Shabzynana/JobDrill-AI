@@ -3,8 +3,8 @@ import * as dotenv from 'dotenv';
 import { User } from 'src/user/entities/user.entity';
 import { Token } from 'src/token/entities/token.entity';
 import { InterviewSession } from 'src/interviews/entities/interview.entity';
-import { Question } from 'src/interviews/entities/question.entity';
-import { Answer } from 'src/interviews/entities/answer.entity';
+import { Question } from 'src/QnA/entities/question.entity';
+import { Answer } from 'src/QnA/entities/answer.entity';
 
 dotenv.config();
 

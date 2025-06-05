@@ -21,7 +21,9 @@ export class Answer extends AbstractBaseEntity {
   @Column("text", { nullable: true })
   feedback: string;
 
-  @OneToOne(() => Question, (question) => question.answer)
+  @OneToOne(() => Question, (question) => question.answer, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   question: Question;
 }

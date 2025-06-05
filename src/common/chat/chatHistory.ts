@@ -8,7 +8,7 @@ export enum Role {
 
 interface ChatPair {
   prompt: string;
-  response: string;
+  response: any;
 }
 
 export const generateSessionHistory = (questions: Question[]) => {
@@ -39,14 +39,23 @@ export const generateInterviewSessionHistory = (session: Partial<InterviewSessio
     if (q.answer) {
       chatPairs.push({
         prompt: q.content,
-        response: q.answer.content,
+        response: {
+          answer: q.answer.content,
+          feedback: q.answer.feedback || '',
+          score: typeof q.answer.score === 'number' ? `${q.answer.score}/10` : null
+        },
+      })
+    } else {
+      chatPairs.push({
+        prompt: q.content,
+        response: '',
       });
     }
   }
 
   const formattedMessages = chatPairs.flatMap(pair => [
-    { role: Role.USER, content: pair.prompt },
-    { role: Role.ASSISTANT, content: pair.response },
+    { role: Role.ASSISTANT, content: pair.prompt },
+    { role: Role.USER, content: pair.response || '' },
   ]);
 
   return formattedMessages;

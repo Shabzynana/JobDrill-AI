@@ -15,12 +15,13 @@ export class Question extends AbstractBaseEntity {
   @Column()
   content: string;
 
-  @ManyToOne(() => InterviewSession, (session) => session.questions)
+  @ManyToOne(() => InterviewSession, (session) => session.questions, {
+    onDelete: "CASCADE",
+  })
   session: InterviewSession;
 
   @OneToOne(() => Answer, (answer) => answer.question, {
-    cascade: true,
-    onDelete: "CASCADE",
+    cascade: true
   })
   answer: Answer;
 }

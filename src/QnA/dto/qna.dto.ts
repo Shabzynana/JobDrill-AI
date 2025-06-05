@@ -1,20 +1,21 @@
 import { ApiHideProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsOptional, IsString } from "class-validator";
 
-export class InterviewDto {
-    
-    @ApiHideProperty()
-    @IsOptional()
-    @IsString()
-    sessionId?: string;
+export class updateQuestionDto {
 
     @IsOptional()
     @IsString()
     @IsNotEmpty()
-    role?: string;
-    
+    content?: string;
+
     @IsOptional()
     @IsString()
     @IsNotEmpty()
-    answer?: string;
+    feedback?: string;
+
+    @IsOptional()
+    @IsString()
+    @IsNotEmpty()
+    score?: number;
+
 }

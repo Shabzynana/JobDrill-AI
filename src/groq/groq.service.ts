@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import Groq from "groq-sdk";
+import { AppUtilities } from 'src/app.utilities';
 
 @Injectable()
 export class GroqService {
@@ -8,7 +9,7 @@ export class GroqService {
     apiKey: process.env.GROQ_API_KEY,
   });
 
-  async getChatCompletion(prompt: string, systemPrompt: string, history: any ): Promise<string> {
+  async getChatCompletion(prompt: string, systemPrompt: string, history: any[] = [] ): Promise<string> {
     const completion = await this.groq.chat.completions.create({
       messages: [
         { 
@@ -23,8 +24,25 @@ export class GroqService {
       ],
       model: 'llama3-70b-8192',
     });
-    console.log(completion.choices[0]?.message);
+    // console.log(completion.choices[0]?.message);
 
-    return completion.choices[0]?.message?.content || '';
+    const response =  completion.choices[0]?.message?.content || '';
+    return AppUtilities.cleanText(response);
   }
+
+  async generateQuestion(prompt: string, systemPrompt: string, history?: any) {
+    return await this.getChatCompletion(prompt, systemPrompt, history);
+  }
+
+  // async generateNextQuestion(prompt: string, systemPrompt: string, history?: any) {
+  //   return await this.getChatCompletion(prompt, systemPrompt, history);
+  // }
+
+  async generateAnswer(prompt: string, systemPrompt: string, history?: any) {
+    return await this.getChatCompletion(prompt, systemPrompt, history);
+  }
+
+  a
+
 }
+

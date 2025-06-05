@@ -46,6 +46,18 @@ export class AppUtilities {
     return false;
   }
 
+  public static cleanText (text: string) {
+    const clean = text
+      .replace(/\t|\u0085|\u2028|\u2029/g, '    ')
+      .replace(/[\b\v]/g, '')
+      .replace(/\r\n|\r/g, '\n')
+      .replace(/\*\*(.*?)\*\*/g, '$1')
+      .replace(/\*(.*?)\*/g, '$1')
+      .trim();
+    return clean;
+  }
+  
+
 
 
  

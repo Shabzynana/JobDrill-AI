@@ -1,3 +1,4 @@
+import { InterviewSession } from 'src/interviews/entities/interview.entity';
 import {
   Column,
   Entity,
@@ -28,5 +29,11 @@ export class User extends AbstractBaseEntity {
 
   @Column({ nullable: true })
   is_verified_date: Date;
+
+  @OneToMany(() => InterviewSession, (session) => session.user, {
+    cascade: true,
+    onDelete: "CASCADE",
+  })
+  sessions: InterviewSession[];
 
 }

@@ -29,6 +29,7 @@ async function bootstrap() {
     .setVersion('1.0')
     .addBearerAuth()
     .addServer(`http://127.0.0.1:${process.env.PORT}/`)
+    .addServer('https://staging-jobdrill-ai.onrender.com/')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api-docs', app, document);

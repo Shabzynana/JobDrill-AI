@@ -8,7 +8,6 @@ RUN npm install --legacy-peer-deps
 
 COPY . .
 
-# Build everything (includes Prisma and NestJS)
 RUN npm run build
 
 # -------- Stage 2: Production --------
@@ -25,6 +24,5 @@ ENV NODE_ENV=production
 
 EXPOSE 5000
 
-# Use your script exactly as-is
 CMD ["node", "dist/src/main.js"]
 

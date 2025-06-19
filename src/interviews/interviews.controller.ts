@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards, Query, Res } from '@nestjs/common';
 import { InterviewsService } from './interviews.service';
-import { InterviewDto } from './dto/interview.dto';
+import { InterviewDto, nextQuestionDto, startInterviewDto, SubmitAnswerDto } from './dto/interview.dto';
 import { ApiBearerAuth, ApiBody, ApiQuery } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
@@ -21,7 +21,7 @@ export class InterviewsController {
 
   @ApiQuery({ name: 'sessionId', required: false, type: String })
   @Post('start')
-  async startInterviewSession(@Body() dto: InterviewDto, @Req() req, @Query('sessionId') sessionId?: string) {
+  async startInterviewSession(@Body() dto: startInterviewDto, @Req() req, @Query('sessionId') sessionId?: string) {
   
     const { sub } = req.user;
     dto.sessionId = sessionId;
@@ -29,20 +29,31 @@ export class InterviewsController {
   }
 
   @Post('submit-answer')
-  async submitAnswer(@Body() dto: InterviewDto, @Req() req, @Query('sessionId') sessionId?: string) {
+  async submitAnswer(@Body() dto: SubmitAnswerDto, @Req() req, @Query('sessionId') sessionId?: string) {
   
     const { sub } = req.user;
     dto.sessionId = sessionId;
     return await this.interviewsService.submitAnswer(dto, sub);
   }
   
-  @ApiBody({ type: InterviewDto, required: false })
+  @ApiBody({ type: nextQuestionDto, required: false })
   @Post('next-question')
-  async nextQuestion(@Req() req, @Body() dto?: InterviewDto, @Query('sessionId') sessionId?: string) {
+  async nextQuestion(@Req() req, @Body() dto?: nextQuestionDto, @Query('sessionId') sessionId?: string) {
 
     const { sub } = req.user;
     dto.sessionId = sessionId;
     return await this.interviewsService.nextQuestion(dto, sub);
+  }
+  
+  @Get('chat-history')
+  async getInterviewSession(@Query('sessionId') sessionId?: string) {
+    return await this.interviewsService.getInterviewChatHistory(sessionId);
+  }
+
+  @Get('user-chat-history')
+  async getUserChatHistory(@Req() req) {
+    const { sub } = req.user;
+    return await this.interviewsService.getAllUserInterviews(sub);
   }
 
 

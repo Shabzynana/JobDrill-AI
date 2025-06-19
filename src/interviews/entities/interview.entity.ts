@@ -18,10 +18,10 @@ export class InterviewSession extends AbstractBaseEntity {
   role: string;
 
   @Column("simple-array", { nullable: true })
-  skills: string[];
+  jobSkills: string[];
 
   @Column("simple-array", { nullable: true })
-  jobDescription: string[];
+  jobResponsibilities: string[];
 
   @OneToMany(() => Question, (question) => question.session, {
     cascade: true,

@@ -11,6 +11,7 @@ import { UserModule } from './user/user.module';
 import { InterviewsModule } from './interviews/interviews.module';
 import { GroqModule } from './groq/groq.module';
 import { QnAModule } from './QnA/QnA.module';
+import { TranscriptionModule } from './transcription/transcription.module';
 
 
 @Module({
@@ -34,6 +35,7 @@ import { QnAModule } from './QnA/QnA.module';
     InterviewsModule,
     GroqModule,
     QnAModule,
+    TranscriptionModule,
   ],
   controllers: [],
   providers: [],

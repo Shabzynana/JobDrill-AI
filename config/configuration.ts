@@ -22,6 +22,11 @@ export const configuration = () => ({
       user: process.env.REDIS_USERNAME,
       pass: process.env.REDIS_PASS,
       db: process.env.REDIS_DB,
+    },
+
+    groq: {
+      apiKey: process.env.GROQ_API_KEY,
+      transcription_url: process.env.GROQ_TRANSCRIPTION_URL
     }
   
   });

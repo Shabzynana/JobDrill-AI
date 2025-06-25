@@ -92,7 +92,7 @@ export class QnAService {
     
         const scoreMatch = response.match(/Score:\s*(\d+)/i);
         const feedbackMatch = response.match(/Feedback:\s*([\s\S]*)/i);
-        
+
         const score = scoreMatch ? Number(scoreMatch[1]) : 0;
         const feedback = feedbackMatch ? feedbackMatch[1].trim() : 'No feedback';
     
@@ -107,7 +107,7 @@ export class QnAService {
         return nextQuestionPersona(historyText);
     }
 
-    async nextQuestion(sessionId: string, history: any) {
+    async nextQuestion(sessionId: string) {
         const session = await this.interviewService.getInterviewSession(sessionId);
         if (!session) throw new NotFoundException('Session not found');
 
@@ -130,7 +130,6 @@ export class QnAService {
             question: savedQuestion.content
         };
     }
-
 
 
 }

@@ -62,7 +62,7 @@ export class InterviewsService {
             const grade = await this.qnAService.evaluateAnswer(question.content, answer.content, sessionHistory);
             if (grade) {
                 await this.qnAService.updateAnswer({ score: grade.score, feedback: grade.feedback }, answer);
-                const next = await this.qnAService.nextQuestion(interview.id, sessionHistory);
+                const next = await this.qnAService.nextQuestion(interview.id);
                 console.log(next, 'next')
             }            
         }
@@ -163,8 +163,7 @@ export class InterviewsService {
             throw new NotFoundException('Interview not found');
         }
         
-        const sessionHisory = generateSessionHistory(interview.questions || []);
-        const next = await this.qnAService.nextQuestion(interview.id, sessionHisory);
+        const next = await this.qnAService.nextQuestion(interview.id);
         if (!next) {
             throw new NotFoundException('No more questions');
         }

@@ -29,10 +29,15 @@ export class InterviewsController {
   }
 
   @Post('submit-answer')
-  async submitAnswer(@Body() dto: SubmitAnswerDto, @Req() req, @Query('sessionId') sessionId?: string) {
-  
+  async submitAnswer(
+    @Body() dto: SubmitAnswerDto, 
+    @Req() req, 
+    @Query('sessionId') sessionId?: string, 
+    @Query('questionId') questionId?: string
+    ) {
     const { sub } = req.user;
     dto.sessionId = sessionId;
+    dto.questionId = questionId;
     return await this.interviewsService.submitAnswer(dto, sub);
   }
   

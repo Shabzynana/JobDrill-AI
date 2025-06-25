@@ -24,7 +24,7 @@ export class QnAService {
         private interviewService: InterviewsService,
     ) {}
 
-    async getQuestionsById(Id: string) {
+    async getQuestionById(Id: string) {
         const question = await this.questionRepository.findOne({
             where: {
                 id: Id
@@ -36,7 +36,7 @@ export class QnAService {
         return question;
     }
 
-    async getAnswersById(Id: string) {
+    async getAnswerById(Id: string) {
         const answer = await this.answerRepository.findOne({
             where: {
                 id: Id
@@ -67,7 +67,7 @@ export class QnAService {
 
     async updateQuestion(dto: updateQuestionDto, question: Question) {
         
-        const existingQuestion = await this.getQuestionsById(question.id);
+        const existingQuestion = await this.getQuestionById(question.id);
         if (!existingQuestion) {
             throw new NotFoundException('Question not found');
         }
@@ -77,7 +77,7 @@ export class QnAService {
 
     async updateAnswer(dto: updateQuestionDto, answer: Answer) {
 
-        const existingAnswer = await this.getAnswersById(answer.id);
+        const existingAnswer = await this.getAnswerById(answer.id);
         if (!existingAnswer) {
             throw new NotFoundException('Answer not found');
         }
@@ -88,11 +88,11 @@ export class QnAService {
     async evaluateAnswer(question: string, answer: string, history: any) {
 
         const prompt = evaluateAnswerPrompt(question, answer);
-        const response = await this.groqService.generateAnswer(prompt, evaluateAnswerPerosna, history );
+        const response = await this.groqService.generateAnswer(prompt, evaluateAnswerPerosna, history);
     
         const scoreMatch = response.match(/Score:\s*(\d+)/i);
-        const feedbackMatch = response.match(/Feedback:\s*(.+)/i);
-
+        const feedbackMatch = response.match(/Feedback:\s*([\s\S]*)/i);
+        
         const score = scoreMatch ? Number(scoreMatch[1]) : 0;
         const feedback = feedbackMatch ? feedbackMatch[1].trim() : 'No feedback';
     
@@ -125,7 +125,10 @@ export class QnAService {
         const newQuestion = await this.groqService.generateQuestion(prompt, generalPersona, sessionHistory);
         const savedQuestion = await this.createQuestion(newQuestion, session);
     
-        return { question: savedQuestion.content };
+        return { 
+            id: savedQuestion.id,
+            question: savedQuestion.content
+        };
     }
 
 

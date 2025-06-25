@@ -82,6 +82,12 @@ export class SubmitAnswerDto {
     @IsString()
     @IsNotEmpty()
     sessionId: string;
+    
+    @ApiHideProperty()
+    @IsOptional()
+    @IsString()
+    @IsNotEmpty()
+    questionId: string;
 
     @IsString()
     @IsNotEmpty()

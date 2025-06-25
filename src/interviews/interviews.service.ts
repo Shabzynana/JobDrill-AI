@@ -77,6 +77,7 @@ export class InterviewsService {
     async startInterview(dto: startInterviewDto, userId: string) {
 
         let interview : InterviewSession;
+        let question: Question;
         const user = await this.userService.getUserById(userId);
         if (!user) {
             throw new NotFoundException('User not found');
@@ -85,18 +86,18 @@ export class InterviewsService {
         if (dto.sessionId) {
             interview = await this.getInterviewSession(dto.sessionId);
         } else {
-            interview = await this.createInterview(dto, userId);
+            interview = await this.createInterview(dto, user.id);
         }
         
         if (dto.role || dto.jobSkills) {
             const response = await this.groqService.generateQuestion(generaterolePrompt(dto.role, dto.jobSkills), generalPersona);
             if (response) {
-                const question = await this.qnAService.createQuestion(response, interview);
+                question = await this.qnAService.createQuestion(response, interview);
             }
         } else if (dto.jobResponsibilities || dto.jobSkills) {
             const response = await this.groqService.generateQuestion(generateJobResponsibilityPrompt(dto.jobResponsibilities, dto.jobSkills), generalPersona);
             if (response) {
-                const question = await this.qnAService.createQuestion(response, interview);
+                question = await this.qnAService.createQuestion(response, interview);
             } 
         }
 
@@ -106,13 +107,15 @@ export class InterviewsService {
             role: interview.role,
             jobResponsibilities: interview.jobResponsibilities,
             jobSkills: interview.jobSkills,
-            history: generateInterviewSessionHistory(chatHistory),
+            questionId: question?.id,
+            history: generateInterviewSessionHistory(chatHistory)
         }
         
     }
 
     async submitAnswer(dto: SubmitAnswerDto, userId: string) {
-
+        
+        let question: Question;
         const user = await this.userService.getUserById(userId);
         if (!user) {
             throw new NotFoundException('User not found');
@@ -123,15 +126,15 @@ export class InterviewsService {
             throw new NotFoundException('Interview not found');
         }
 
-        const lastQuestion = interview.questions.find(q => !q.answer);
-        if (!lastQuestion) {
-            throw new NotFoundException('No more questions');
+        question = interview.questions.find(q => q.id === dto.questionId);
+        if (!question) {
+            question = await this.qnAService.getQuestionById(dto.questionId);
         }
-        
+
         const sessionHisory = generateSessionHistory(interview.questions || []);
         if (dto.answer) {
-            const answer = await this.qnAService.createAnswer(dto.answer, lastQuestion);
-            const grade = await this.qnAService.evaluateAnswer(lastQuestion.content, answer.content, sessionHisory);
+            const answer = await this.qnAService.createAnswer(dto.answer, question);
+            const grade = await this.qnAService.evaluateAnswer(question.content, answer.content, sessionHisory);
             if (grade) {
                 await this.qnAService.updateAnswer({ score: grade.score, feedback: grade.feedback }, answer);
             }
@@ -172,6 +175,7 @@ export class InterviewsService {
             role: interview.role,
             jobResponsibilities: interview.jobResponsibilities,
             jobSkills: interview.jobSkills,
+            questionId: next.id,
             history: generateInterviewSessionHistory(chatHistory),
         }
     }

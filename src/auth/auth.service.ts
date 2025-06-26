@@ -172,7 +172,8 @@ export class AuthService {
   }
 
   async changePassword(userId: string, dto: changePasswordDto) {
-    const user = await this.userService.getUserById(userId);
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    console.log(user);
     if (!user) throw new NotFoundException('User does not exist');
 
     const isMatch = await AppUtilities.comparePassword(dto.oldPassword, user.password);

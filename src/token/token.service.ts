@@ -17,8 +17,7 @@ export class TokenService {
     @InjectRepository(Token)
     private tokenRepository: Repository<Token>,
     private configService: ConfigService,
-    private jwtService: JwtService
-    
+    private jwtService: JwtService,
   ) {
     this.refreshTokenSecret = this.configService.get('jwt.refreshSecret');
   }
@@ -47,11 +46,11 @@ export class TokenService {
       where: {
         uuid: data.uuid,
       },
-    })
+    });
 
     if (existingToken) {
-      const updatedToken = await this.tokenRepository.merge(existingToken, data)
-      return await this.tokenRepository.save(updatedToken)
+      const updatedToken = await this.tokenRepository.merge(existingToken, data);
+      return await this.tokenRepository.save(updatedToken);
     } else {
       const userToken = await this.tokenRepository.save(data);
       return userToken;
@@ -72,46 +71,44 @@ export class TokenService {
     if (Date.now() > tokenData.expires_in) {
       throw new UnauthorizedException('Token expired');
     }
-    
+
     return tokenData;
   }
 
   async verifyRefreshToken(dto: refreshTokenDto) {
-
     const payload = await this.jwtService.verifyAsync(dto.refresh_token, {
       secret: this.refreshTokenSecret,
     });
     if (!payload) throw new UnauthorizedException('Invalid token');
-    
+
     const tokenData = await this.tokenRepository.findOne({
       where: {
         refresh_token: dto.refresh_token,
       },
     });
     if (!tokenData) throw new UnauthorizedException('Token not found');
- 
+
     if (Date.now() > tokenData.expires_in) {
       throw new UnauthorizedException('Token expired');
     }
-    
+
     return tokenData;
   }
 
   async deleteToken(dto: TokenDto) {
     const tokenData = await this.getUserTokenByType(dto);
-    return await this.tokenRepository.remove(tokenData)
+    return await this.tokenRepository.remove(tokenData);
   }
 
   async getUserTokenByType(dto: TokenDto) {
-
     const tokenData = await this.tokenRepository.find({
       where: {
         userId: dto.userId,
-        type: dto.token_type
-      }
-    })
+        type: dto.token_type,
+      },
+    });
     if (!tokenData) throw new NotFoundException('Token not found');
-    return tokenData
+    return tokenData;
   }
 
   async generateLoginToken(token: ITokenize) {
@@ -125,8 +122,4 @@ export class TokenService {
   async generateForgotPasswordToken(userId: string) {
     return await this.createToken({ userId: userId }, TokenType.RESET_PASSWORD);
   }
-
-    
-
-
 }

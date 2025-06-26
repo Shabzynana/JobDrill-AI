@@ -16,7 +16,7 @@ import { QueueService } from 'src/common/queue/queue.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User,Token]),
+    TypeOrmModule.forFeature([User, Token]),
     JwtModule.register({
       global: true,
     }),

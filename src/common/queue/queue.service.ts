@@ -8,9 +8,7 @@ const { AuthQ } = CONSTANT;
 export class QueueService {
   private readonly logger = new Logger(QueueService.name);
 
-  constructor(
-    @InjectQueue(AuthQ) private readonly sendauthMail: Queue,
-  ) {}
+  constructor(@InjectQueue(AuthQ) private readonly sendauthMail: Queue) {}
 
   private async addMailToQueue(queue: Queue, type: string, payload: any) {
     try {
@@ -30,7 +28,4 @@ export class QueueService {
   async addAuthMailToQueue(type: string, payload: any) {
     return this.addMailToQueue(this.sendauthMail, type, payload);
   }
-
 }
-
-

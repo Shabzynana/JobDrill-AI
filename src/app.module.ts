@@ -13,13 +13,12 @@ import { GroqModule } from './groq/groq.module';
 import { QnAModule } from './QnA/QnA.module';
 import { TranscriptionModule } from './transcription/transcription.module';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       load: [configuration],
-      expandVariables: true
+      expandVariables: true,
     }),
     TypeOrmModule.forRootAsync({
       useFactory: async () => ({

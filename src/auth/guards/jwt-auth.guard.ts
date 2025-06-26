@@ -1,8 +1,4 @@
-import {
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
@@ -51,8 +47,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
       if (payload.type === TokenType.LOGIN) {
         payload = await this.verifyJwtToken(token);
-        if (!payload)
-          throw new UnauthorizedException('JWT verification failed');
+        if (!payload) throw new UnauthorizedException('JWT verification failed');
 
         request['user'] = payload;
       } else if (payload.userId) {
@@ -77,23 +72,21 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
         relations: {
           user: true,
         },
-      })
+      });
     } catch (err) {
       console.error('Access token verification failed:', err);
     }
-    
   }
 
   private async verifyJwtToken(token: string) {
-    try{
+    try {
       const payload: JwtPayload = await this.jwtService.verifyAsync(token, {
         secret: this.configService.get<string>('jwt.secret'),
-      });  
+      });
       return payload;
     } catch (err) {
       console.error('JWT verification failed:', err);
     }
-   
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {

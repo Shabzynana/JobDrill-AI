@@ -1,17 +1,9 @@
 import { InterviewSession } from 'src/interviews/entities/interview.entity';
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  OneToOne,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 import { AbstractBaseEntity } from '../../database/base.entity';
-
 
 @Entity({ name: 'users' })
 export class User extends AbstractBaseEntity {
-
   @Column({ nullable: false })
   first_name: string;
 
@@ -32,8 +24,7 @@ export class User extends AbstractBaseEntity {
 
   @OneToMany(() => InterviewSession, (session) => session.user, {
     cascade: true,
-    onDelete: "CASCADE",
+    onDelete: 'CASCADE',
   })
   sessions: InterviewSession[];
-
 }

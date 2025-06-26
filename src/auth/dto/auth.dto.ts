@@ -1,13 +1,13 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsString, MinLength } from "class-validator";
+import { IsEmail, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
 
 export class UserLoginDto {
-    @IsString()
-    @IsEmail()
-    email: string;
-  
-    @IsString()
-    @MinLength(6)
-    password: string;
+  @IsString()
+  @IsEmail()
+  email: string;
+
+  @IsString()
+  @MinLength(6)
+  password: string;
 }
 
 export class resendConfirmationMailDto {
@@ -17,7 +17,6 @@ export class resendConfirmationMailDto {
 }
 
 export class resetPasswordDto {
-
   @IsString()
   @IsNotEmpty()
   newPassword: string;
@@ -28,7 +27,6 @@ export class resetPasswordDto {
 }
 
 export class changePasswordDto {
-
   @IsString()
   @IsNotEmpty()
   oldPassword: string;
@@ -40,4 +38,4 @@ export class changePasswordDto {
   @IsString()
   @IsNotEmpty()
   confirmPassword: string;
-} 
+}

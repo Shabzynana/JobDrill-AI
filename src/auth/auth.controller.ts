@@ -4,7 +4,12 @@ import { refreshTokenDto } from 'src/token/dto/token.dto';
 import { TokenType } from 'src/token/dto/token_type';
 import { CreateUserDto } from 'src/user/dto/user.dto';
 import { AuthService } from './auth.service';
-import { changePasswordDto, resendConfirmationMailDto, resetPasswordDto, UserLoginDto } from './dto/auth.dto';
+import {
+  changePasswordDto,
+  resendConfirmationMailDto,
+  resetPasswordDto,
+  UserLoginDto,
+} from './dto/auth.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @ApiTags('Auth')
@@ -12,14 +17,13 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  
   @Post('register')
-  async register(@Body()dto: CreateUserDto) {
+  async register(@Body() dto: CreateUserDto) {
     return await this.authService.register(dto);
   }
 
   @Post('login')
-  async login(@Body()dto: UserLoginDto) {
+  async login(@Body() dto: UserLoginDto) {
     return await this.authService.login(dto);
   }
 
@@ -47,7 +51,7 @@ export class AuthController {
   async refreshToken(@Body() dto: refreshTokenDto) {
     return await this.authService.refreshToken(dto);
   }
-  
+
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Post('change-password')
@@ -55,12 +59,12 @@ export class AuthController {
     const { sub } = req.user;
     return await this.authService.changePassword(sub, dto);
   }
-  
+
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Delete('logout')
   async logout(@Req() req, @Query('token_type') token_type: string) {
     const { sub } = req.user;
-    return await this.authService.logout( sub, token_type as TokenType);
+    return await this.authService.logout(sub, token_type as TokenType);
   }
 }

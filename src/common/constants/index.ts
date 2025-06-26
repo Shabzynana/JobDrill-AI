@@ -5,7 +5,6 @@ export const CONSTANT = {
   AuthQ: 'authQueue',
 };
 
-
 export const AUTH_MAIL = {
   confirmMail: ' Email Verification',
   welcomeMail: ' Welcome Onboard',
@@ -13,10 +12,6 @@ export const AUTH_MAIL = {
   forgotPasswordMail: 'Reset Password',
 };
 
-export const file_type = [
-  'audio/mp3', 'audio/mpeg', 'audio/wav', 'audio/webm', 'audio/x-m4a'
-];
+export const file_type = ['audio/mp3', 'audio/mpeg', 'audio/wav', 'audio/webm', 'audio/x-m4a'];
 
 export const MAX_QUESTIONS_PER_SESSION = 5;
-
-

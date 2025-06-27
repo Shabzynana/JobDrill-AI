@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GroqService } from 'src/groq/groq.service';
 import { Repository } from 'typeorm';
-import { InterviewDto } from './dto/interview.dto';
+import { InterviewDto, nextQuestionDto, startInterviewDto, SubmitAnswerDto } from './dto/interview.dto';
 import { Answer } from '../QnA/entities/answer.entity';
 import { InterviewSession } from './entities/interview.entity';
 import { Question } from '../QnA/entities/question.entity';
@@ -10,7 +10,7 @@ import { generateSessionHistory, generateInterviewSessionHistory, Role } from 's
 import { UserService } from 'src/user/user.service';
 import { User } from 'src/user/entities/user.entity';
 import { QnAService } from 'src/QnA/QnA.service';
-import { generalPersona, generaterolePrompt } from 'src/common/persona/general';
+import { generalPersona, generateJobResponsibilityPrompt, generaterolePrompt } from 'src/common/persona/general';
 
 @Injectable()
 export class InterviewsService {
@@ -26,32 +26,6 @@ export class InterviewsService {
         private readonly userService: UserService,
         private readonly qnAService: QnAService
     ) {}
-
-    // async startInterviewSessionWithGroq(dto: InterviewDto, userId: string):Promise<{ role: Role; content: string }[]> {
-        
-    //     let interview: InterviewSession;
-    //     const user = await this.userService.getUserById(userId);
-    //     if (!user) {
-    //         throw new NotFoundException('User not found');
-    //     }    
-
-    //     if (dto.sessionId) {
-    //         interview = await this.getInterviewSession(dto.sessionId);
-    //     } else {
-    //         interview = await this.startInterview(dto, userId);
-    //     }
-  
-    //     const sessionHistory = generateSessionHistory(interview.questions || []);
-    //     const response = await this.groqService.getChatCompletion(dto.prompt, generalPersona, sessionHistory);
-    //     if (response) {
-    //         const question = await this.qnAService.createQuestion(dto.prompt, interview);
-    //         await this.qnAService.createAnswer(response, question);
-    //     }
-    
-    //     const chatHistory = await this.getInterviewSession(interview.id);
-    //     return generateInterviewSessionHistory(chatHistory);
-        
-    // }
 
     async startInterviewSessionWithGroq(dto: InterviewDto, userId: string):Promise<{ role: Role; content: string }[]> {
         
@@ -100,7 +74,7 @@ export class InterviewsService {
         
     }
 
-    async startInterview(dto: InterviewDto, userId: string) {
+    async startInterview(dto: startInterviewDto, userId: string) {
 
         let interview : InterviewSession;
         const user = await this.userService.getUserById(userId);
@@ -114,23 +88,30 @@ export class InterviewsService {
             interview = await this.createInterview(dto, userId);
         }
         
-        if (dto.role) {
-            const response = await this.groqService.generateQuestion(generaterolePrompt(dto.role), generalPersona);
+        if (dto.role || dto.jobSkills) {
+            const response = await this.groqService.generateQuestion(generaterolePrompt(dto.role, dto.jobSkills), generalPersona);
             if (response) {
                 const question = await this.qnAService.createQuestion(response, interview);
             }
+        } else if (dto.jobResponsibilities || dto.jobSkills) {
+            const response = await this.groqService.generateQuestion(generateJobResponsibilityPrompt(dto.jobResponsibilities, dto.jobSkills), generalPersona);
+            if (response) {
+                const question = await this.qnAService.createQuestion(response, interview);
+            } 
         }
-        const chatHistory = await this.getInterviewSession(interview.id);
 
+        const chatHistory = await this.getInterviewSession(interview.id);
         return {
             id: interview.id,
             role: interview.role,
+            jobResponsibilities: interview.jobResponsibilities,
+            jobSkills: interview.jobSkills,
             history: generateInterviewSessionHistory(chatHistory),
         }
         
     }
 
-    async submitAnswer(dto: InterviewDto, userId: string) {
+    async submitAnswer(dto: SubmitAnswerDto, userId: string) {
 
         const user = await this.userService.getUserById(userId);
         if (!user) {
@@ -160,12 +141,14 @@ export class InterviewsService {
         return {
             id: interview.id,
             role: interview.role,
+            jobResponsibilities: interview.jobResponsibilities,
+            jobSkills: interview.jobSkills,
             history: generateInterviewSessionHistory(chatHistory),
         }
         
     }
 
-    async nextQuestion(dto: InterviewDto, userId: string) {
+    async nextQuestion(dto: nextQuestionDto, userId: string) {
         
         const user = await this.userService.getUserById(userId);
         if (!user) {
@@ -187,11 +170,12 @@ export class InterviewsService {
         return {
             id: interview.id,
             role: interview.role,
+            jobResponsibilities: interview.jobResponsibilities,
+            jobSkills: interview.jobSkills,
             history: generateInterviewSessionHistory(chatHistory),
         }
     }
         
-
     async getInterviewSession(id: string): Promise<InterviewSession> {
        return  await this.interviewRepository.findOne({ 
             where: { id: id },
@@ -205,6 +189,15 @@ export class InterviewsService {
                 }
             } 
         });
+    }
+
+    async getInterviewChatHistory(id: string) {
+        
+        const interview = await this.getInterviewSession(id);
+        if (!interview) {
+            throw new NotFoundException('Interview not found');
+        }
+        return generateInterviewSessionHistory(interview);
     }
 
     async getAllInterviews(): Promise<InterviewSession[]> {
@@ -240,8 +233,8 @@ export class InterviewsService {
         const interview = new InterviewSession();
         interview.user = user as User;
         interview.role = dto.role || null;
-        interview.jobDescription = [];
-        interview.skills = [];
+        interview.jobResponsibilities = dto.jobResponsibilities || null;
+        interview.jobSkills = dto.jobSkills || null;
         return await this.interviewRepository.save(interview);
 
     }

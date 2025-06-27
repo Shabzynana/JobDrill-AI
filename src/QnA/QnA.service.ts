@@ -1,6 +1,7 @@
-import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { generateSessionHistory } from 'src/common/chat/chatHistory';
+import { MAX_QUESTIONS_PER_SESSION } from 'src/common/constants';
 import { evaluateAnswerPerosna, evaluateAnswerPrompt, generalPersona, nextQuestionPersona } from 'src/common/persona/general';
 import { GroqService } from 'src/groq/groq.service';
 import { InterviewSession } from 'src/interviews/entities/interview.entity';
@@ -44,7 +45,6 @@ export class QnAService {
         return answer;
     }
 
-
     async createQuestion(prompt: string, interview: InterviewSession) {
 
         const question = new Question();
@@ -67,21 +67,21 @@ export class QnAService {
 
     async updateQuestion(dto: updateQuestionDto, question: Question) {
         
-        const me = await this.getQuestionsById(question.id);
-        if (!me) {
+        const existingQuestion = await this.getQuestionsById(question.id);
+        if (!existingQuestion) {
             throw new NotFoundException('Question not found');
         }
-        const updateQuestion = Object.assign(me, dto);
+        const updateQuestion = Object.assign(existingQuestion, dto);
         return await this.questionRepository.save(updateQuestion);
     }
 
     async updateAnswer(dto: updateQuestionDto, answer: Answer) {
 
-        const me = await this.getAnswersById(answer.id);
-        if (!me) {
+        const existingAnswer = await this.getAnswersById(answer.id);
+        if (!existingAnswer) {
             throw new NotFoundException('Answer not found');
         }
-        const updateAnswer = Object.assign(me, dto);
+        const updateAnswer = Object.assign(existingAnswer, dto);
         return await this.answerRepository.save(updateAnswer);        
     }
 
@@ -89,7 +89,6 @@ export class QnAService {
 
         const prompt = evaluateAnswerPrompt(question, answer);
         const response = await this.groqService.generateAnswer(prompt, evaluateAnswerPerosna, history );
-    
     
         const scoreMatch = response.match(/Score:\s*(\d+)/i);
         const feedbackMatch = response.match(/Feedback:\s*(.+)/i);
@@ -111,7 +110,10 @@ export class QnAService {
     async nextQuestion(sessionId: string, history: any) {
         const session = await this.interviewService.getInterviewSession(sessionId);
         if (!session) throw new NotFoundException('Session not found');
-    
+
+        if (session.questions.length >= MAX_QUESTIONS_PER_SESSION) {
+            throw new BadRequestException('Maximum questions reached');
+        }
         const allQnA = session.questions.map(q => ({
           question: q.content,
           answer: q.answer?.content || '',

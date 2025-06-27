@@ -13,4 +13,6 @@ export const AUTH_MAIL = {
   forgotPasswordMail: 'Reset Password',
 };
 
+export const MAX_QUESTIONS_PER_SESSION = 5;
+
 

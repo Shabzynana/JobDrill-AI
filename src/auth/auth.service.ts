@@ -9,6 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AppUtilities } from 'src/app.utilities';
+import { GoogleAuthService } from 'src/common/google-auth/goggle-auth.service';
 import { EmailService } from 'src/email/email.service';
 import { refreshTokenDto } from 'src/token/dto/token.dto';
 import { TokenType } from 'src/token/dto/token_type';
@@ -39,6 +40,7 @@ export class AuthService {
     private configService: ConfigService,
     private tokenService: TokenService,
     private emailService: EmailService,
+    private googleService: GoogleAuthService,
   ) {
     this.jwtExpires = this.configService.get('jwt.expiresIn');
     this.jwtSecret = this.configService.get('jwt.secret');
@@ -197,4 +199,44 @@ export class AuthService {
       message: 'Logout successfully',
     };
   }
+  
+  async signUpGoogle() {
+    return await this.googleService.login();
+  }
+
+  async signInGoogle(code: any, error?: any) {
+    try {
+      if (error) {
+        console.error('Google OAuth error:', error);
+        throw new ForbiddenException('Google OAuth login failed');
+      }
+  
+      const token = await this.googleService.requestAccessToken(code);
+      if (!token || !token.access_token) {
+        throw new ForbiddenException('Failed to retrieve access token from Google');
+      }
+  
+      const userData = await this.googleService.getUserInfo(token.access_token);
+      if (!userData || !userData.email) {
+        throw new ForbiddenException('Failed to retrieve user information from Google');
+      }
+  
+      const user = await this.googleService.createGoogleUser(userData);
+      if (!user) {
+        throw new ForbiddenException('Failed to create or find user');
+      }
+  
+      const savedToken = await this.tokenService.generateLoginToken({
+        userId: user.id,
+        access_token: token.access_token,
+        refresh_token: token.refresh_token
+      });
+  
+      return savedToken
+    } catch (err) {
+      console.error('Error during Google sign-in:', err);
+      throw new ForbiddenException('Google login failed');
+    }
+  }
+  
 }

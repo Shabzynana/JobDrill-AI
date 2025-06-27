@@ -3,6 +3,9 @@ import { v4 } from 'uuid';
 import * as fs from 'fs';
 import * as crypto from 'crypto';
 import * as bcrypt from 'bcrypt';
+import { customAlphabet } from 'nanoid';
+const CHARS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
 
 @Injectable()
 export class AppUtilities {
@@ -51,5 +54,10 @@ export class AppUtilities {
       .replace(/\*(.*?)\*/g, '$1')
       .trim();
     return clean;
+  }
+
+  public static generateShortCode(charLen = 6): string {
+    const nanoid = customAlphabet(CHARS, charLen);
+    return nanoid(charLen);
   }
 }

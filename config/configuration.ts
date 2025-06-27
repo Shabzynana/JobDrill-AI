@@ -26,4 +26,19 @@ export const configuration = () => ({
     apiKey: process.env.GROQ_API_KEY,
     transcription_url: process.env.GROQ_TRANSCRIPTION_URL,
   },
+
+  google: {
+    id: process.env.google_CLIENT_ID,
+    secret: process.env.google_SECRET,
+    base_url: process.env.google_API_URL,
+    google_EXPIRES_IN: 3600,
+    callback: process.env.google_CALLBACK_URL,
+    auth_url: process.env.google_AUTH_URL,
+    token_url: process.env.google_TOKEN_URL,
+    access_type: process.env.google_ACCESS_TYPE,
+    scope: {
+      manage: process.env.google_MANAGE,
+    },
+    api_key: process.env.google_API_KEY,
+  },
 });

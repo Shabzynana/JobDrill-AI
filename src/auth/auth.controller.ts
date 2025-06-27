@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Query, Redirect, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { refreshTokenDto } from 'src/token/dto/token.dto';
 import { TokenType } from 'src/token/dto/token_type';
@@ -11,6 +11,8 @@ import {
   UserLoginDto,
 } from './dto/auth.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { Request as ExpressRequest } from 'express';
+
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -67,4 +69,19 @@ export class AuthController {
     const { sub } = req.user;
     return await this.authService.logout(sub, token_type as TokenType);
   }
+  
+  @Redirect()
+  @Get('google/signup')
+  async signUpGoogle() {
+    return await this.authService.signUpGoogle();
+  }
+  
+  @Get('google/callback')
+  async googleCallback(@Req() req: ExpressRequest) {
+    const { query } = req;
+
+    const { code, error } = query;
+    return await this.authService.signInGoogle(code, error);
+  }
+
 }

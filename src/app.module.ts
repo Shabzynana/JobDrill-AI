@@ -11,14 +11,15 @@ import { UserModule } from './user/user.module';
 import { InterviewsModule } from './interviews/interviews.module';
 import { GroqModule } from './groq/groq.module';
 import { QnAModule } from './QnA/QnA.module';
-
+import { TranscriptionModule } from './transcription/transcription.module';
+import { GoogleAuthModule } from './common/google-auth/google-auth.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       load: [configuration],
-      expandVariables: true
+      expandVariables: true,
     }),
     TypeOrmModule.forRootAsync({
       useFactory: async () => ({
@@ -34,6 +35,8 @@ import { QnAModule } from './QnA/QnA.module';
     InterviewsModule,
     GroqModule,
     QnAModule,
+    TranscriptionModule,
+    GoogleAuthModule,
   ],
   controllers: [],
   providers: [],

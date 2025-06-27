@@ -1,9 +1,9 @@
-import { InterviewSession } from "src/interviews/entities/interview.entity";
-import { Question } from "src/QnA/entities/question.entity";
+import { InterviewSession } from 'src/interviews/entities/interview.entity';
+import { Question } from 'src/QnA/entities/question.entity';
 
 export enum Role {
-  USER = "user",
-  ASSISTANT = "assistant",
+  USER = 'user',
+  ASSISTANT = 'assistant',
 }
 
 interface ChatPair {
@@ -23,7 +23,7 @@ export const generateSessionHistory = (questions: Question[]) => {
     }
   }
 
-  const formattedMessages = chatPairs.flatMap(pair => [
+  const formattedMessages = chatPairs.flatMap((pair) => [
     { role: Role.USER, content: pair.prompt },
     { role: Role.ASSISTANT, content: pair.response },
   ]);
@@ -31,7 +31,7 @@ export const generateSessionHistory = (questions: Question[]) => {
   return formattedMessages;
 };
 
-export const generateInterviewSessionHistory = (session: Partial<InterviewSession> ) => {
+export const generateInterviewSessionHistory = (session: Partial<InterviewSession>) => {
   const chatPairs: ChatPair[] = [];
   if (!Array.isArray(session.questions)) return [];
 
@@ -42,9 +42,9 @@ export const generateInterviewSessionHistory = (session: Partial<InterviewSessio
         response: {
           answer: q.answer.content,
           feedback: q.answer.feedback || '',
-          score: typeof q.answer.score === 'number' ? `${q.answer.score}/10` : null
+          score: typeof q.answer.score === 'number' ? `${q.answer.score}/10` : null,
         },
-      })
+      });
     } else {
       chatPairs.push({
         prompt: q.content,
@@ -53,11 +53,10 @@ export const generateInterviewSessionHistory = (session: Partial<InterviewSessio
     }
   }
 
-  const formattedMessages = chatPairs.flatMap(pair => [
+  const formattedMessages = chatPairs.flatMap((pair) => [
     { role: Role.ASSISTANT, content: pair.prompt },
     { role: Role.USER, content: pair.response || '' },
   ]);
 
   return formattedMessages;
-  
-}
+};

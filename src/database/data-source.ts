@@ -17,7 +17,7 @@ const dataSource = new DataSource({
   host: process.env.DB_HOST,
   port: +process.env.DB_PORT,
   database: process.env.DB_NAME,
-  entities: [User,Token,InterviewSession,Question,Answer],
+  entities: [User, Token, InterviewSession, Question, Answer],
   migrations: [process.env.DB_MIGRATIONS],
   synchronize: isDevelopment,
   migrationsTableName: 'migrations',

@@ -1,11 +1,11 @@
-import { Processor, WorkerHost} from '@nestjs/bullmq';
+import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
 import { MailerService } from '@nestjs-modules/mailer';
 import { CONSTANT } from 'src/common/constants';
 import { AUTH_MAIL } from 'src/common/constants';
 
 const { AuthQ } = CONSTANT;
-const { confirmMail, welcomeMail, passswordChangeMail, forgotPasswordMail} = AUTH_MAIL
+const { confirmMail, welcomeMail, passswordChangeMail, forgotPasswordMail } = AUTH_MAIL;
 
 @Processor(AuthQ)
 export class AuthConsumer extends WorkerHost {
@@ -18,7 +18,6 @@ export class AuthConsumer extends WorkerHost {
   }
 
   private async handleEmail(job: Job, queueName: string) {
-
     const validJobs = [confirmMail, welcomeMail, passswordChangeMail, forgotPasswordMail];
     if (validJobs.includes(job.name)) {
       await this.sendMail(job);
@@ -33,16 +32,15 @@ export class AuthConsumer extends WorkerHost {
         from: job.data.from,
         to: job.data.to,
         subject: job.data.subject,
-        html: job.data.html
+        html: job.data.html,
       });
       console.log({
-        'Job ID:': job.id, 
-        '✅ Mail sent to:': job.data.to, 
-        'Job Name:': job.name
+        'Job ID:': job.id,
+        '✅ Mail sent to:': job.data.to,
+        'Job Name:': job.name,
       });
     } catch (err) {
       console.error('❌ Failed to send mail:', err);
     }
   }
-  
 }

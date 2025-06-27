@@ -13,17 +13,18 @@ import { Token } from 'src/token/entities/token.entity';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { EmailService } from 'src/email/email.service';
 import { QueueService } from 'src/common/queue/queue.service';
+import { GoogleAuthService } from 'src/common/google-auth/goggle-auth.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User,Token]),
+    TypeOrmModule.forFeature([User, Token]),
     JwtModule.register({
       global: true,
     }),
     forwardRef(() => UserModule),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, TokenService, JwtAuthGuard, EmailService, QueueService],
+  providers: [AuthService, JwtStrategy, TokenService, JwtAuthGuard, EmailService, QueueService, GoogleAuthService],
   exports: [JwtAuthGuard],
 })
 export class AuthModule {}

@@ -8,7 +8,6 @@ import { TokenService } from 'src/token/token.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Token } from 'src/token/entities/token.entity';
 
-
 @Module({
   imports: [
     MailerModule.forRootAsync({
@@ -25,7 +24,7 @@ import { Token } from 'src/token/entities/token.entity';
       }),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([Token])
+    TypeOrmModule.forFeature([Token]),
   ],
   controllers: [],
   providers: [EmailService, AuthConsumer, QueueService, TokenService],

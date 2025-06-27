@@ -1,15 +1,14 @@
-import {
-  Injectable,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { v4 } from 'uuid';
 import * as fs from 'fs';
 import * as crypto from 'crypto';
 import * as bcrypt from 'bcrypt';
+import { customAlphabet } from 'nanoid';
+const CHARS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 
 @Injectable()
 export class AppUtilities {
-
   public static hashPassword(password: string) {
     return bcrypt.hash(password, 10);
   }
@@ -46,7 +45,7 @@ export class AppUtilities {
     return false;
   }
 
-  public static cleanText (text: string) {
+  public static cleanText(text: string) {
     const clean = text
       .replace(/\t|\u0085|\u2028|\u2029/g, '    ')
       .replace(/[\b\v]/g, '')
@@ -56,10 +55,9 @@ export class AppUtilities {
       .trim();
     return clean;
   }
-  
 
-
-
- 
-
-} 
+  public static generateShortCode(charLen = 6): string {
+    const nanoid = customAlphabet(CHARS, charLen);
+    return nanoid(charLen);
+  }
+}

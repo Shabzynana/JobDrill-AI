@@ -22,9 +22,9 @@ const { AuthQ } = CONSTANT;
       inject: [ConfigService],
     }),
 
-    BullModule.registerQueue({ 
+    BullModule.registerQueue({
       name: AuthQ,
-      prefix: 'JobDrill-AI', 
+      prefix: 'JobDrill-AI',
     }),
     BullBoardModule.forRootAsync({
       imports: [ConfigModule],
@@ -32,15 +32,15 @@ const { AuthQ } = CONSTANT;
         route: '/queues',
         adapter: ExpressAdapter,
         adapterOptions: {
-          basePath: '/queues'
-        }
+          basePath: '/queues',
+        },
       }),
       inject: [ConfigService],
     }),
     BullBoardModule.forFeature({
       name: AuthQ,
       adapter: BullMQAdapter,
-    })
+    }),
   ],
   exports: [BullModule],
 })

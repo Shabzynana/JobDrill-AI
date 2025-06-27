@@ -1,0 +1,10 @@
+node_modules
+dist
+build
+templates
+db
+coverage
+.env
+package-lock.json
+yarn.lock
+*.log

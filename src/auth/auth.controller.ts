@@ -1,25 +1,31 @@
-import { Body, Controller, Delete, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Query, Redirect, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { refreshTokenDto } from 'src/token/dto/token.dto';
 import { TokenType } from 'src/token/dto/token_type';
 import { CreateUserDto } from 'src/user/dto/user.dto';
 import { AuthService } from './auth.service';
-import { changePasswordDto, resendConfirmationMailDto, resetPasswordDto, UserLoginDto } from './dto/auth.dto';
+import {
+  changePasswordDto,
+  resendConfirmationMailDto,
+  resetPasswordDto,
+  UserLoginDto,
+} from './dto/auth.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { Request as ExpressRequest } from 'express';
+
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  
   @Post('register')
-  async register(@Body()dto: CreateUserDto) {
+  async register(@Body() dto: CreateUserDto) {
     return await this.authService.register(dto);
   }
 
   @Post('login')
-  async login(@Body()dto: UserLoginDto) {
+  async login(@Body() dto: UserLoginDto) {
     return await this.authService.login(dto);
   }
 
@@ -47,7 +53,7 @@ export class AuthController {
   async refreshToken(@Body() dto: refreshTokenDto) {
     return await this.authService.refreshToken(dto);
   }
-  
+
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Post('change-password')
@@ -55,12 +61,27 @@ export class AuthController {
     const { sub } = req.user;
     return await this.authService.changePassword(sub, dto);
   }
-  
+
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Delete('logout')
   async logout(@Req() req, @Query('token_type') token_type: string) {
     const { sub } = req.user;
-    return await this.authService.logout( sub, token_type as TokenType);
+    return await this.authService.logout(sub, token_type as TokenType);
   }
+  
+  @Redirect()
+  @Get('google/signup')
+  async signUpGoogle() {
+    return await this.authService.signUpGoogle();
+  }
+  
+  @Get('google/callback')
+  async googleCallback(@Req() req: ExpressRequest) {
+    const { query } = req;
+
+    const { code, error } = query;
+    return await this.authService.signInGoogle(code, error);
+  }
+
 }

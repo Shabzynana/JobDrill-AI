@@ -42,7 +42,7 @@ export class InterviewsService {
   async startInterviewSessionWithGroq(
     dto: InterviewDto,
     userId: string,
-  ): Promise<{ role: Role; content: string }[]> {
+  ) {
     let interview: InterviewSession;
     let question: Question;
     let answer: Answer;
@@ -132,17 +132,20 @@ export class InterviewsService {
 
     const chatHistory = await this.getInterviewSession(interview.id);
     return {
-      id: interview.id,
+      sessionId: interview.id,
       role: interview.role,
       jobResponsibilities: interview.jobResponsibilities,
       jobSkills: interview.jobSkills,
-      questionId: question?.id,
-      history: generateInterviewSessionHistory(chatHistory),
+      question: {
+        id: question.id,
+        content: question.content,
+      }
     };
   }
 
   async submitAnswer(dto: SubmitAnswerDto, userId: string) {
     let question: Question;
+    let answer: Answer;
     const user = await this.userService.getUserById(userId);
     if (!user) {
       throw new NotFoundException('User not found');
@@ -160,14 +163,14 @@ export class InterviewsService {
 
     const sessionHisory = generateSessionHistory(interview.questions || []);
     if (dto.answer) {
-      const answer = await this.qnAService.createAnswer(dto.answer, question);
+      answer = await this.qnAService.createAnswer(dto.answer, question);
       const grade = await this.qnAService.evaluateAnswer(
         question.content,
         answer.content,
         sessionHisory,
       );
       if (grade) {
-        await this.qnAService.updateAnswer(
+        answer = await this.qnAService.updateAnswer(
           { score: grade.score, feedback: grade.feedback },
           answer,
         );
@@ -176,11 +179,20 @@ export class InterviewsService {
 
     const chatHistory = await this.getInterviewSession(interview.id);
     return {
-      id: interview.id,
+      sessionId: interview.id,
       role: interview.role,
       jobResponsibilities: interview.jobResponsibilities,
       jobSkills: interview.jobSkills,
-      history: generateInterviewSessionHistory(chatHistory),
+      question: {
+        id: question.id,
+        content: question.content,
+      },
+      answer: {
+        id: answer.id,
+        content: answer.content,
+        score: answer.score,
+        feedback: answer.feedback,
+      }
     };
   }
 
@@ -202,12 +214,14 @@ export class InterviewsService {
 
     const chatHistory = await this.getInterviewSession(interview.id);
     return {
-      id: interview.id,
+      sessionId: interview.id,
       role: interview.role,
       jobResponsibilities: interview.jobResponsibilities,
       jobSkills: interview.jobSkills,
-      questionId: next.id,
-      history: generateInterviewSessionHistory(chatHistory),
+      question: {
+        id: next.id,
+        content: next.question,
+      }
     };
   }
 
@@ -216,17 +230,28 @@ export class InterviewsService {
       where: { id: id },
       relations: ['user', 'questions', 'questions.answer'],
       select: {
+        id: true,
+        role: true,
+        jobResponsibilities: true,
+        jobSkills: true,
+        questions: {
+          id: true,
+          content: true,
+          answer: {
+            id: true,
+            content: true,
+            score: true,
+            feedback: true,
+          },
+        },
         user: {
           id: true,
-          first_name: true,
-          last_name: true,
-          email: true,
         },
       },
     });
   }
 
-  async getInterviewChatHistory(id: string) {
+  async getInterviewSessionFormatted(id: string) {
     const interview = await this.getInterviewSession(id);
     if (!interview) {
       throw new NotFoundException('Interview not found');
@@ -247,11 +272,22 @@ export class InterviewsService {
       where: { user: user },
       relations: ['user', 'questions', 'questions.answer'],
       select: {
+        id: true,
+        role: true,
+        jobResponsibilities: true,
+        jobSkills: true,
+        questions: {
+          id: true,
+          content: true,
+          answer: {
+            id: true,
+            content: true,
+            score: true,
+            feedback: true,
+          },
+        },
         user: {
           id: true,
-          first_name: true,
-          last_name: true,
-          email: true,
         },
       },
     });

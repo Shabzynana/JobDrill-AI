@@ -7,6 +7,7 @@ export enum Role {
 }
 
 interface ChatPair {
+  questionId?: string;
   prompt: string;
   response: any;
 }
@@ -38,6 +39,7 @@ export const generateInterviewSessionHistory = (session: Partial<InterviewSessio
   for (const q of session.questions) {
     if (q.answer) {
       chatPairs.push({
+        questionId: q.id,
         prompt: q.content,
         response: {
           answer: q.answer.content,
@@ -47,16 +49,31 @@ export const generateInterviewSessionHistory = (session: Partial<InterviewSessio
       });
     } else {
       chatPairs.push({
+        questionId: q.id,
         prompt: q.content,
         response: '',
       });
     }
   }
 
-  const formattedMessages = chatPairs.flatMap((pair) => [
-    { role: Role.ASSISTANT, content: pair.prompt },
-    { role: Role.USER, content: pair.response || '' },
-  ]);
+  // const formattedMessages = chatPairs.flatMap((pair) => [
+  //   { questionId: pair.questionId },
+  //   { role: Role.ASSISTANT, content: pair.prompt },
+  //   { role: Role.USER, content: pair.response || '' },
+  // ]);
+
+  const formattedMessages = chatPairs.map((pair) => ({
+    questionId: pair.questionId,
+    messages: [
+      { role: Role.ASSISTANT, 
+        content: pair.prompt 
+      },
+      {
+        role: Role.USER,
+        content: pair.response || '',
+      },
+    ],
+  }));
 
   return formattedMessages;
 };

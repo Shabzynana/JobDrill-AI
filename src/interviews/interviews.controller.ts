@@ -76,9 +76,14 @@ export class InterviewsController {
     return await this.interviewsService.nextQuestion(dto, sub);
   }
 
-  @Get('chat-history')
+  @Get('chat-history/editedVersion')
+  async getChatHistory(@Query('sessionId') sessionId?: string) {
+    return await this.interviewsService.getInterviewSession(sessionId);
+  }
+
+  @Get('chat-history/formattedVersion')
   async getInterviewSession(@Query('sessionId') sessionId?: string) {
-    return await this.interviewsService.getInterviewChatHistory(sessionId);
+    return await this.interviewsService.getInterviewSessionFormatted(sessionId);
   }
 
   @Get('user-chat-history')

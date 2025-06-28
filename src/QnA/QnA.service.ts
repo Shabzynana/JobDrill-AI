@@ -51,6 +51,9 @@ export class QnAService {
       where: {
         id: Id,
       },
+      relations: {
+        question: true,
+      },
     });
     return answer;
   }
@@ -63,14 +66,21 @@ export class QnAService {
   }
 
   async createAnswer(response: string, question: Question) {
-    const answer = new Answer();
-    answer.content = response;
-    answer.question = question;
-    const savedAnswer = await this.answerRepository.save(answer);
 
-    question.answer = savedAnswer;
-    await this.questionRepository.save(question);
-    return savedAnswer;
+    if (!question.answer) {
+      const answer = new Answer();
+      answer.content = response;
+      answer.question = question;
+      const savedAnswer = await this.answerRepository.save(answer);
+
+      question.answer = savedAnswer;
+      await this.questionRepository.save(question);
+      return savedAnswer;
+    }
+
+    const updateAnswer = await this.updateAnswer(
+      { content: response }, question.answer);
+    return updateAnswer; 
   }
 
   async updateQuestion(dto: updateQuestionDto, question: Question) {

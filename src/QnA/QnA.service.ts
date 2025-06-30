@@ -10,10 +10,9 @@ import { generateSessionHistory } from 'src/common/chat/chatHistory';
 import { MAX_QUESTIONS_PER_SESSION } from 'src/common/constants';
 import {
   evaluateAnswerPerosna,
-  evaluateAnswerPrompt,
   generalPersona,
-  nextQuestionPersona,
 } from 'src/common/persona/general';
+import { evaluateAnswerPrompt, nextQuestionPrompt } from 'src/common/persona/prompt';
 import { GroqService } from 'src/groq/groq.service';
 import { InterviewSession } from 'src/interviews/entities/interview.entity';
 import { InterviewsService } from 'src/interviews/interviews.service';
@@ -114,10 +113,15 @@ export class QnAService {
     return { score, feedback };
   }
 
-  private buildNextQuestionPrompt(history: { question: string; answer: string }[]) {
+  private buildNextQuestionPrompt(
+    history: { question: string; answer: string }[], 
+    role?: string,
+    jobResponsibilities?: string[],
+    jobSkills?: string[]
+    ) {
     const historyText = history.map((q) => `Q: ${q.question}\nA: ${q.answer}`).join('\n\n');
 
-    return nextQuestionPersona(historyText);
+    return nextQuestionPrompt(historyText, role, jobResponsibilities, jobSkills);
   }
 
   async nextQuestion(sessionId: string) {
@@ -134,7 +138,10 @@ export class QnAService {
 
     const sessionHistory = generateSessionHistory(session.questions || []);
 
-    const prompt = this.buildNextQuestionPrompt(allQnA);
+    const prompt = this.buildNextQuestionPrompt(
+      allQnA, session.role, session.jobResponsibilities, session.jobSkills
+    );
+    console.log(prompt, 'prompt')
     const newQuestion = await this.groqService.generateQuestion(
       prompt,
       generalPersona,

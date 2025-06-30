@@ -21,9 +21,8 @@ import { User } from 'src/user/entities/user.entity';
 import { QnAService } from 'src/QnA/QnA.service';
 import {
   generalPersona,
-  generateJobResponsibilityPrompt,
-  generaterolePrompt,
 } from 'src/common/persona/general';
+import { generateJobResponsibilityPrompt, generaterolePrompt } from 'src/common/persona/prompt';
 
 @Injectable()
 export class InterviewsService {

@@ -27,8 +27,7 @@ export class GroqService {
       ],
       model: 'llama3-70b-8192',
     });
-    // console.log(completion.choices[0]?.message);
-
+    
     const response = completion.choices[0]?.message?.content || '';
     return AppUtilities.cleanText(response);
   }
@@ -36,10 +35,6 @@ export class GroqService {
   async generateQuestion(prompt: string, systemPrompt: string, history?: any) {
     return await this.getChatCompletion(prompt, systemPrompt, history);
   }
-
-  // async generateNextQuestion(prompt: string, systemPrompt: string, history?: any) {
-  //   return await this.getChatCompletion(prompt, systemPrompt, history);
-  // }
 
   async generateAnswer(prompt: string, systemPrompt: string, history?: any) {
     return await this.getChatCompletion(prompt, systemPrompt, history);

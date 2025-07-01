@@ -2,6 +2,11 @@ import { InterviewSession } from 'src/interviews/entities/interview.entity';
 import { Column, Entity, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 import { AbstractBaseEntity } from '../../database/base.entity';
 
+export enum AuthType {
+  GOOGLE = 'google',
+  LOCAL = 'local',
+}
+
 @Entity({ name: 'users' })
 export class User extends AbstractBaseEntity {
   @Column({ nullable: false })
@@ -21,6 +26,13 @@ export class User extends AbstractBaseEntity {
 
   @Column({ nullable: true })
   is_verified_date: Date;
+
+  @Column({ 
+    type: 'enum', 
+    enum: AuthType, 
+    default: AuthType.LOCAL 
+  })
+  auth_type: AuthType;
 
   @OneToMany(() => InterviewSession, (session) => session.user, {
     cascade: true,

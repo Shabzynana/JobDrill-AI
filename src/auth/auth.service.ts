@@ -226,12 +226,7 @@ export class AuthService {
         throw new ForbiddenException('Failed to create or find user');
       }
   
-      const savedToken = await this.tokenService.generateLoginToken({
-        userId: user.id,
-        access_token: token.access_token,
-        refresh_token: token.refresh_token
-      });
-  
+      const savedToken = await this.signToken(user.id);
       return savedToken
     } catch (err) {
       console.error('Error during Google sign-in:', err);

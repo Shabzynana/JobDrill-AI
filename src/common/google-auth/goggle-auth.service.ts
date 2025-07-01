@@ -16,7 +16,7 @@ import { googleTokenAPI } from 'src/common/constants';
 import axios from 'axios';
 import { UserService } from 'src/user/user.service';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/user/entities/user.entity';
+import { AuthType, User } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
 
 const { GOOGLE_TOKEN_URL, GOOGLE_USER_INFO_URL } = googleTokenAPI;
@@ -49,7 +49,6 @@ export class GoogleAuthService {
 
   async login(): Promise<any> {
 
-    console.log(this.scope, 'scope')
     const queryParams = querystring.stringify({
       client_id: this.client_ID,
       redirect_uri: this.callback,
@@ -160,7 +159,8 @@ export class GoogleAuthService {
       last_name: data.family_name,
       password: null,
     })
-    newUser.is_verified = data.verified_email === 'true';
+    newUser.is_verified = data.verified_email
+    newUser.auth_type = AuthType.GOOGLE;
     await this.userRepository.save(newUser)
 
     return await this.userService.getUserById(newUser.id);

@@ -111,17 +111,9 @@ export class InterviewsService {
       interview = await this.createInterview(dto, user.id);
     }
 
-    if (dto.role || dto.jobSkills) {
+    if (dto.role || dto.jobResponsibilities || dto.jobSkills) {
       const response = await this.groqService.generateQuestion(
-        generaterolePrompt(dto.role, dto.jobSkills),
-        generalPersona,
-      );
-      if (response) {
-        question = await this.qnAService.createQuestion(response, interview);
-      }
-    } else if (dto.jobResponsibilities || dto.jobSkills) {
-      const response = await this.groqService.generateQuestion(
-        generateJobResponsibilityPrompt(dto.jobResponsibilities, dto.jobSkills),
+        generaterolePrompt(dto.role, dto.jobResponsibilities, dto.jobSkills),
         generalPersona,
       );
       if (response) {

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GroqService } from 'src/groq/groq.service';
 import { Repository } from 'typeorm';
@@ -267,6 +267,7 @@ export class InterviewsService {
         role: true,
         jobResponsibilities: true,
         jobSkills: true,
+        created_at: true,
         questions: {
           id: true,
           content: true,
@@ -295,5 +296,22 @@ export class InterviewsService {
     interview.jobResponsibilities = dto.jobResponsibilities || null;
     interview.jobSkills = dto.jobSkills || null;
     return await this.interviewRepository.save(interview);
+  }
+
+  async deleteInterview(id: string, userId: string) {
+
+    const user = await this.userService.getUserById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const interview = await this.getInterviewSession(id);
+    if (!interview) {
+      throw new NotFoundException('Interview not found');
+    }
+
+    if (interview.user.id !== user.id) {
+      throw new ForbiddenException('You are not authorized to delete this interview');
+    }
+    return await this.interviewRepository.remove(interview);
   }
 }

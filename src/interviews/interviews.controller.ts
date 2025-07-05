@@ -91,4 +91,10 @@ export class InterviewsController {
     const { sub } = req.user;
     return await this.interviewsService.getAllUserInterviews(sub);
   }
+  
+  @Delete('delete-interview') 
+  async deleteInterview(@Query('sessionId') sessionId: string, @Req() req) {
+    const { sub } = req.user;
+    return await this.interviewsService.deleteInterview(sessionId, sub);
+  }
 }

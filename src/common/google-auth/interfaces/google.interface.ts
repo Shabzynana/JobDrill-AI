@@ -7,7 +7,7 @@ export interface googleAccessToken extends ITokenize {
 export interface googleProfile {
   id: string;
   email: string;
-  verified_email: string;
+  verified_email: boolean;
   name: string;
   given_name: string;
   family_name: string;

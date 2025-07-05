@@ -1,9 +1,14 @@
-export const generaterolePrompt = (role: string, skill?: string[]): string => {
+export const generaterolePrompt = (role: string, jobResponsibility?: string[], skill?: string[]): string => {
+    
+    const jobDescText = jobResponsibility?.length
+      ? `The job responsibilities include: ${jobResponsibility.join(', ')}.`
+      : '';
+
     const skillText = skill?.length
       ? ` Focus on incorporating the following skills or competencies into the question: ${skill.join(', ')}.`
       : '';
   
-    return `Generate a thoughtful and relevant interview question tailored specifically this role: ${role}.${skillText} The question should evaluate the candidate's suitability for this position.`.trim();
+    return `Generate a thoughtful and relevant interview question tailored specifically this role: ${role}.${skillText}${jobDescText}. The question should evaluate the candidate's suitability for this position.`.trim();
 };
   
 export const generateJobResponsibilityPrompt = (

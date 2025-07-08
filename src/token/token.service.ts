@@ -37,7 +37,8 @@ export class TokenService {
       uuid: token.uuid ? token.uuid : AppUtilities.genUuid(),
       access_token: hashedToken,
       refresh_token: token.refresh_token || 'null',
-      expires_in: AppUtilities.exp1hr(),
+      access_token_expires_in: AppUtilities.exp1hr(),
+      refresh_token_expires_in: AppUtilities.exp5hr(),
       type: token_type,
       userId: token.userId ? token.userId : null,
     } as Token;
@@ -68,7 +69,7 @@ export class TokenService {
       throw new UnauthorizedException('Invalid token');
     }
 
-    if (Date.now() > tokenData.expires_in) {
+    if (Date.now() > tokenData.access_token_expires_in) {
       throw new UnauthorizedException('Token expired');
     }
 
@@ -88,7 +89,7 @@ export class TokenService {
     });
     if (!tokenData) throw new UnauthorizedException('Token not found');
 
-    if (Date.now() > tokenData.expires_in) {
+    if (Date.now() > tokenData.refresh_token_expires_in) {
       throw new UnauthorizedException('Token expired');
     }
 

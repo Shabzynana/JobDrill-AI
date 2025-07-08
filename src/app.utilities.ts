@@ -32,6 +32,14 @@ export class AppUtilities {
     return Date.now() + 3600 * 1000;
   }
 
+  public static exp5hr(): number {
+    return Date.now() + 3600 * 5 *1000;
+  }
+
+  public static exp7d(): number {
+    return Date.now() + 3600 * 24 * 7 * 1000;
+  }
+
   public static genUuid() {
     return v4();
   }

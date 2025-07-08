@@ -27,7 +27,10 @@ export class Token extends AbstractBaseEntity {
   type: TokenType;
 
   @Column('bigint')
-  expires_in: number;
+  access_token_expires_in: number;
+
+  @Column('bigint')
+  refresh_token_expires_in: number;
 
   @Column()
   userId: string;

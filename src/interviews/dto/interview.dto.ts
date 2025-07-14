@@ -67,6 +67,17 @@ export class startInterviewDto {
   @IsArray()
   @IsString({ each: true })
   jobResponsibilities?: string[];
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  experienceLevel?: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  difficultyLevel?: string;
+
 }
 
 export class SubmitAnswerDto {
@@ -93,4 +104,22 @@ export class nextQuestionDto {
   @IsString()
   @IsNotEmpty()
   sessionId: string;
+}
+
+export class handleNextQuestionDto {
+
+  @IsString()
+  @IsNotEmpty()
+  lastestQ: string;
+
+  @IsString()
+  @IsNotEmpty()
+  lastestA: string;
+
+  @ApiHideProperty()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  sessionId: string;
+
 }

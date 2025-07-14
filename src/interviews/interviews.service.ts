@@ -3,13 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { GroqService } from 'src/groq/groq.service';
 import { Repository } from 'typeorm';
 import {
+  handleNextQuestionDto,
   InterviewDto,
   nextQuestionDto,
   startInterviewDto,
   SubmitAnswerDto,
 } from './dto/interview.dto';
 import { Answer } from '../QnA/entities/answer.entity';
-import { InterviewSession } from './entities/interview.entity';
+import { difficultyLevel, experienceLevel, InterviewSession } from './entities/interview.entity';
 import { Question } from '../QnA/entities/question.entity';
 import {
   generateSessionHistory,
@@ -113,7 +114,7 @@ export class InterviewsService {
 
     if (dto.role || dto.jobResponsibilities || dto.jobSkills) {
       const response = await this.groqService.generateQuestion(
-        generaterolePrompt(dto.role, dto.jobResponsibilities, dto.jobSkills),
+        generaterolePrompt(dto.role, dto.jobResponsibilities, dto.jobSkills, dto.experienceLevel, dto.difficultyLevel),
         generalPersona,
       );
       if (response) {
@@ -285,7 +286,7 @@ export class InterviewsService {
     });
   }
 
-  async createInterview(dto: InterviewDto, userId: string) {
+  async createInterview(dto: startInterviewDto, userId: string) {
     const user = await this.userService.getUserById(userId);
     if (!user) {
       throw new NotFoundException('User not found');
@@ -295,6 +296,8 @@ export class InterviewsService {
     interview.role = dto.role || null;
     interview.jobResponsibilities = dto.jobResponsibilities || null;
     interview.jobSkills = dto.jobSkills || null;
+    interview.experienceLevel = dto.experienceLevel as experienceLevel || null;
+    interview.difficultyLevel = dto.difficultyLevel as difficultyLevel || null;
     return await this.interviewRepository.save(interview);
   }
 

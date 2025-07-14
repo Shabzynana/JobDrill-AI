@@ -39,6 +39,5 @@ export class GroqService {
   async generateAnswer(prompt: string, systemPrompt: string, history?: any) {
     return await this.getChatCompletion(prompt, systemPrompt, history);
   }
-
-  a;
+  
 }

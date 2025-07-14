@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { InterviewsService } from './interviews.service';
 import {
+  handleNextQuestionDto,
   InterviewDto,
   nextQuestionDto,
   startInterviewDto,

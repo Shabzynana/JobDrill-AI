@@ -12,12 +12,13 @@ import {
   evaluateAnswerPerosna,
   generalPersona,
 } from 'src/common/persona/general';
-import { evaluateAnswerPrompt, nextQuestionPrompt } from 'src/common/persona/prompt';
+import { evaluateAnswerPrompt, generateFollowUpPrompt, nextQuestionPrompt, shouldFollowUpPrompt } from 'src/common/persona/prompt';
 import { GroqService } from 'src/groq/groq.service';
+import { handleNextQuestionDto } from 'src/interviews/dto/interview.dto';
 import { InterviewSession } from 'src/interviews/entities/interview.entity';
 import { InterviewsService } from 'src/interviews/interviews.service';
 import { Repository } from 'typeorm';
-import { updateQuestionDto } from './dto/qna.dto';
+import { decideNextQuestionDto, updateQuestionDto } from './dto/qna.dto';
 import { Answer } from './entities/answer.entity';
 import { Question } from './entities/question.entity';
 
@@ -117,11 +118,15 @@ export class QnAService {
     history: { question: string; answer: string }[], 
     role?: string,
     jobResponsibilities?: string[],
-    jobSkills?: string[]
+    jobSkills?: string[],
+    experienceLevel?: 'entry' | 'mid' | 'senior',
+    difficulty?: 'basic' | 'intermediate' | 'advanced',
     ) {
-    const historyText = history.map((q) => `Q: ${q.question}\nA: ${q.answer}`).join('\n\n');
+    const historyText = history
+      .map((q, i) => `Turn ${i + 1}:\nInterviewer: ${q.question}\nCandidate: ${q.answer}`)
+      .join('\n\n');
 
-    return nextQuestionPrompt(historyText, role, jobResponsibilities, jobSkills);
+    return nextQuestionPrompt(historyText, role, jobResponsibilities, jobSkills, experienceLevel, difficulty);
   }
 
   async nextQuestion(sessionId: string) {
@@ -139,7 +144,7 @@ export class QnAService {
     const sessionHistory = generateSessionHistory(session.questions || []);
 
     const prompt = this.buildNextQuestionPrompt(
-      allQnA, session.role, session.jobResponsibilities, session.jobSkills
+      allQnA, session.role, session.jobResponsibilities, session.jobSkills, session.experienceLevel, session.difficultyLevel,
     );
     console.log(prompt, 'prompt')
     const newQuestion = await this.groqService.generateQuestion(
@@ -154,4 +159,5 @@ export class QnAService {
       question: savedQuestion.content,
     };
   }
+
 }

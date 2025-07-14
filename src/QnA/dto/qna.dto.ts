@@ -17,3 +17,15 @@ export class updateQuestionDto {
   @IsNotEmpty()
   score?: number;
 }
+
+export class decideNextQuestionDto {
+
+  @IsString()
+  @IsNotEmpty()
+  lastestQ: string;
+
+  @IsString()
+  @IsNotEmpty()
+  lastestA: string;
+  
+}

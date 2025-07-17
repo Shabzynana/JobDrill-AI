@@ -12,7 +12,7 @@ import {
   evaluateAnswerPerosna,
   generalPersona,
 } from 'src/common/persona/general';
-import { evaluateAnswerPrompt, generateFollowUpPrompt, nextQuestionPrompt, shouldFollowUpPrompt } from 'src/common/persona/prompt';
+import { evaluateAnswerPrompt, finalSummaryPrompt, nextQuestionPrompt } from 'src/common/persona/prompt';
 import { GroqService } from 'src/groq/groq.service';
 import { handleNextQuestionDto } from 'src/interviews/dto/interview.dto';
 import { InterviewSession } from 'src/interviews/entities/interview.entity';

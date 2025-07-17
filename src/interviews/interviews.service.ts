@@ -21,9 +21,9 @@ import { UserService } from 'src/user/user.service';
 import { User } from 'src/user/entities/user.entity';
 import { QnAService } from 'src/QnA/QnA.service';
 import {
-  generalPersona,
+  generalPersona, interviewerSummaryPerosna,
 } from 'src/common/persona/general';
-import { generateJobResponsibilityPrompt, generaterolePrompt } from 'src/common/persona/prompt';
+import { finalSummaryPrompt, generateJobResponsibilityPrompt, generaterolePrompt } from 'src/common/persona/prompt';
 
 @Injectable()
 export class InterviewsService {
@@ -317,4 +317,43 @@ export class InterviewsService {
     }
     return await this.interviewRepository.remove(interview);
   }
+
+  async generateInterviewSummary(sessionId: string, userId: string) {
+
+    const user = await this.userService.getUserById(userId);
+    if (!user) throw new NotFoundException('User not found');
+
+    const interview = await this.getInterviewSession(sessionId);
+    if (!interview) throw new NotFoundException('Interview not found');
+
+    if (interview.user.id !== user.id) {
+      throw new ForbiddenException('You are not authorized to generate summary for this interview');
+    }
+
+    const allQnA = interview.questions.map((q) => ({
+      question: q.content,
+      answer: q.answer?.content || '',
+      feedback: q.answer?.feedback || '',
+    }));
+
+    const summary = this.geneateSummaryPrompt(allQnA);
+    console.log(summary, 'summary')
+    const response = await this.groqService.generateSummary(summary, interviewerSummaryPerosna);
+    return response;
+
+  }
+
+  private geneateSummaryPrompt(
+    history: { question: string; answer: string; feedback?: string }[],
+  ) {
+
+    const historyText = history
+      .map((q, i) => `Turn ${i + 1}:\nQuestion: ${q.question}\nAnswer: ${q.answer}\nFeedback: ${q.feedback || ''}`)
+      .join('\n\n');
+    console.log(historyText, 'historyText')  
+    return finalSummaryPrompt(historyText);
+  }
+
+
+
 }

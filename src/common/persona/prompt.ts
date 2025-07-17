@@ -68,14 +68,25 @@ export const nextQuestionPrompt = (
       Here is the conversation history so far:
       ${history}
 
-      Based on the history and context, do one of the following:
-      - Ask a relevant follow-up question if the last answer was unclear, shallow, or missed important aspects.
-      - Otherwise, move on to a new topic aligned with the role, responsibilities, or skills.
+      Your job is to decide whether a follow-up question is necessary or not based on the candidate's most recent answer.
+      If the last answer requires clarification or deeper insight, ask one follow-up question.
 
-      Generate the **next best** interview question. Keep it clear, concise, and focused on evaluating the candidate’s knowledge or problem-solving ability.
-      Respond with **only the question** — no explanations, no commentary.
+      However:
+      - Ask **only one follow-up** per topic.
+      - If a follow-up has already been asked for that topic, move on.
+      - Do not stay on the same topic for more than one follow-up, even if the candidate's response is weak.
+      - If no follow-up is necessary, ask a question that introduces a new topic based on the job role, responsibilities, or skills.
+
+      Your response should be **only the next question**, clearly worded, and technically relevant. Do not explain or add commentary.
     `.trim();
 };
+
+// Based on the history and context, do one of the following:
+//       - Ask a relevant follow-up question if the last answer was unclear, shallow, or missed important aspects.
+//       - Otherwise, move on to a new topic aligned with the role, responsibilities, or skills.
+
+//       Generate the **next best** interview question. Keep it clear, concise, and focused on evaluating the candidate’s knowledge or problem-solving ability.
+//       Respond with **only the question** — no explanations, no commentary.
 
 
 export const evaluateAnswerPrompt = (question: string, answer: string) =>
@@ -93,38 +104,26 @@ export const evaluateAnswerPrompt = (question: string, answer: string) =>
   `.trim();
 
 
-export const shouldFollowUpPrompt = (question: string, answer: string) => `
-  Based on the following:
+  export const finalSummaryPrompt = (history: string) => `
+  Here is a transcript of an interview between a candidate and an interviewer:
+  Analyze each answer to question and feedback well in the interview transcript.
+  
+  ${history}
+  
+  Give a summary of the conversation in the following format:
+  - Candidate's strengths
+  - Candidate's weaknesses
+  - Topics they performed well on
+  - Topics they need to improve
+  - Final score out of 100
 
-  Question: ${question}
-  Answer: ${answer}
+  Use a friendly and helpful tone.
 
-  Should the interviewer ask a follow-up question or move on?
+  Title your summary "Interview Aseessment Summary"
+  
+  `.trim();
 
-  Respond with one word only: "follow-up" or "move-on"
-`.trim();
 
-export const generateFollowUpPrompt = (
-  question: string,
-  answer: string,
-  role?: string,
-  experienceLevel?: 'entry' | 'mid' | 'senior',
-  difficulty?: 'basic' | 'intermediate' | 'advanced',
-  ): string => `
-  The interviewer previously asked:
-  "${question}"
-
-  The candidate responded:
-  "${answer}"
-
-  Ask a follow-up question to dig deeper or clarify.
-
-  Role: ${role ?? 'N/A'}
-  Level: ${experienceLevel ?? 'N/A'}
-  Difficulty: ${difficulty ?? 'N/A'}
-
-  Respond with only the follow-up question.
-`.trim();
 
 
   

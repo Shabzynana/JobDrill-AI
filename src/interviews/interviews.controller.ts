@@ -98,4 +98,10 @@ export class InterviewsController {
     const { sub } = req.user;
     return await this.interviewsService.deleteInterview(sessionId, sub);
   }
+  
+  @Get('interview-summary')
+  async generateInterviewSummary(@Query('sessionId') sessionId: string, @Req() req) {
+    const { sub } = req.user;
+    return await this.interviewsService.generateInterviewSummary(sessionId, sub);
+  }
 }

@@ -33,6 +33,7 @@ async function bootstrap() {
     .addBearerAuth()
     .addServer(`http://127.0.0.1:${process.env.PORT}/`)
     .addServer('https://staging-jobdrill-ai.onrender.com/')
+    .addServer('http://51.20.134.215:5000/')
     .addServer('https://staging-jobdrill-ai-wo5q.onrender.com/')
     .build();
   const document = SwaggerModule.createDocument(app, config);

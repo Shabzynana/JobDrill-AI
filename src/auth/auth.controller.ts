@@ -84,4 +84,11 @@ export class AuthController {
     return await this.authService.signInGoogle(code, error);
   }
 
+  @Get('test')
+  async test() {
+    // log a string?
+    console.log('Test endpoint hit');
+    return { message: 'Test endpoint hit' };
+  }
+
 }

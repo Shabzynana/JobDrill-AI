@@ -1,14 +1,45 @@
-name: Test SSH
+# name: Test SSH
+
+# on:
+#   workflow_dispatch:
+
+# jobs:
+#   test:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Create .env on server
+#         uses: appleboy/ssh-action@v1.2.2
+#         with:
+#           host: ${{ secrets.EC2_HOST }}
+#           username: ${{ secrets.EC2_USER }}
+#           key: ${{ secrets.EC2_SSH_KEY }}
+#           script: |
+#             mkdir -p ~/apps/jobdrill-api
+
+#             cat > ~/apps/jobdrill-api/.env <<'EOF'
+#             ${{ secrets.ENV_FILE }}
+#             EOF
+
+#             echo "Done!"
+#             ls -la ~/apps/jobdrill-api
+
+
+name: Deploy to EC2
 
 on:
-  workflow_dispatch:
+  workflow_run:
+    workflows: ["Build and Push Docker Image"]
+    types:
+      - completed
 
 jobs:
-  test:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
-      - name: Create .env on server
+      - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.2.2
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -21,5 +52,18 @@ jobs:
             ${{ secrets.ENV_FILE }}
             EOF
 
-            echo "Done!"
-            ls -la ~/apps/jobdrill-api
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/jobdrill-api:latest
+
+            docker stop jobdrill-api || true
+            docker rm jobdrill-api || true
+
+            docker run -d \
+              --name jobdrill-api \
+              --restart unless-stopped \
+              --env-file ~/apps/jobdrill-api/.env \
+              -p 5000:5000 \
+              ${{ secrets.DOCKERHUB_USERNAME }}/jobdrill-api:latest
+
+            docker image prune -f
+
+            docker ps

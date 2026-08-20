@@ -76,6 +76,7 @@ export class AuthController {
     return await this.authService.signUpGoogle();
   }
   
+  
   @Get('google/callback')
   async googleCallback(@Req() req: ExpressRequest) {
     const { query } = req;
